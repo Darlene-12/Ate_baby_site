@@ -3,6 +3,7 @@ from flask_mail import Mail, Message
 from models import db, ContactMessage
 from config import Config
 from flask_cors import CORS
+import smtplib
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -56,6 +57,16 @@ def submit_contact():
         Message:
         {message}
         """
+
+        try:
+            print("🔍 Testing direct SMTP login...")
+            test_server = smtplib.SMTP('smtp.gmail.com', 587)
+            test_server.starttls()
+            test_server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+            test_server.quit()
+            print("✅ SMTP login success")
+        except Exception as smtp_err:
+            print("❌ SMTP login failed:", smtp_err)
 
         msg = Message(subject=subject,
                       sender=app.config['MAIL_DEFAULT_SENDER'],

@@ -250,16 +250,13 @@
     </script>
 
     <script>
-document.querySelector("form").addEventListener("submit", async function(e) {
-    e.preventDefault(); // Prevent page reload
-
-    const formData = new FormData(this);
-
-    const res = await fetch("http://127.0.0.1:5000/submit", {
+    document.querySelector("form").addEventListener("submit", async function(e) {
+        e.preventDefault(); // Prevent page reload
+        const formData = new FormData(this);
+        const res = await fetch("http://127.0.0.1:5000/submit", {
         method: "POST",
         body: formData
     });
-
     const result = await res.json();
 
     if (result.success) {
@@ -268,7 +265,7 @@ document.querySelector("form").addEventListener("submit", async function(e) {
     } else {
         alert("❌ Error: " + result.error);
     }
-});
+    });
 </script>
 
 </body>
