@@ -38,7 +38,6 @@ def submit_contact():
         if not all([name, email, message]):
             return error_response("Name, email, and message are required.", 422)
 
-        # Save to DB
         new_msg = ContactMessage(
             name=name,
             email=email,
@@ -48,37 +47,21 @@ def submit_contact():
         db.session.add(new_msg)
         db.session.commit()
 
-        # Email
-        subject = f"New Contact from {name}"
-        body = f"""
-        Name: {name}
-        Email: {email}
-        Company: {company}
-        Message:
-        {message}
-        """
+        print("✅ Saved to DB")
 
-        try:
-            print("🔍 Testing direct SMTP login...")
-            test_server = smtplib.SMTP('smtp.gmail.com', 587)
-            test_server.starttls()
-            test_server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-            test_server.quit()
-            print("✅ SMTP login success")
-        except Exception as smtp_err:
-            print("❌ SMTP login failed:", smtp_err)
-
-        msg = Message(subject=subject,
-                      sender=app.config['MAIL_DEFAULT_SENDER'],
-                      recipients=["stacyate018@gmail.com", "stacyjuma000@gmail.com"],
-                      body=body)
+        msg = Message(
+            subject=f"New Contact from {name}",
+            recipients=["stacyate018@gmail.com"],
+            body=f"Name: {name}\nEmail: {email}\nCompany: {company}\nMessage:\n{message}"
+        )
         mail.send(msg)
+        print("✅ Email sent to stacyate018@gmail.com")
 
         return jsonify({"success": True, "message": "Message received and email sent."}), 200
 
     except Exception as e:
-        return error_response(f"An unexpected error occurred: {str(e)}", 500)
-
+        print("❌ Flask error:", e)
+        return error_response("Unexpected error occurred", 500)
 
 if __name__ == '__main__':
     with app.app_context():
